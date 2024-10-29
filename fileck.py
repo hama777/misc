@@ -7,17 +7,11 @@ import re
 import os
 from collections import defaultdict
 
-# 24/10/28 v0.01 ファイルサイズが同じファイルを表示
-version = "0.01"
+# 24/10/29 v0.02 複数ディレクトリに対応
+version = "0.02"
 
 appdir = os.path.dirname(os.path.abspath(__file__))
-datadir =  r"c:/oracle/work/" 
 dirlist = appdir + "./dirlist.txt"
-datafile = appdir + "./sample.txt"
-#dailyfile = appdir + "./sample.txt"
-outfile = appdir + "./mlist.htm"
-templatefile = appdir + "./template.htm"
-out = ""
 file_info = {}
 
 def main_proc():
@@ -27,15 +21,20 @@ def main_proc():
     same_size_file_check()
 
 def create_file_info() :
-    dir_path = datadir
+    for d in dir_list :
+        earch_dir(d)
+
+def earch_dir(d) :
+    dir_path = d
 
     datafile_list = [
         f for f in os.listdir(dir_path) if os.path.isfile(os.path.join(dir_path, f))
     ]
     for fname in datafile_list :
-        size = os.path.getsize(dir_path + fname)
+        file_path = dir_path + "/" + fname
+        size = os.path.getsize(file_path)
         #print(f'name = {fname} / {size}')
-        file_info[dir_path + fname] = size
+        file_info[file_path] = size
 
     #print(file_info)
 
