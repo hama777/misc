@@ -7,8 +7,8 @@ import re
 import os
 from collections import defaultdict
 
-# 24/10/29 v0.02 複数ディレクトリに対応
-version = "0.02"
+# 24/11/01 v0.03 シリアル番号によるチェックを入れた
+version = "0.03"
 
 appdir = os.path.dirname(os.path.abspath(__file__))
 dirlist = appdir + "./dirlist.txt"
@@ -19,6 +19,7 @@ def main_proc():
     read_dirlist()
     create_file_info()
     same_size_file_check()
+    same_seeial_file_check()
 
 def create_file_info() :
     for d in dir_list :
@@ -48,6 +49,27 @@ def same_size_file_check() :
             print(f"サイズ {size} のファイル:")
             for file in files:
                 print(f"- {file}")
+
+def same_seeial_file_check() :
+    serial_groups = defaultdict(list)
+    for filename  in file_info.keys():
+        ret = serial_num_check(filename)
+        if ret != None :
+            serial_groups[ret].append(filename)
+
+    for serial, files in serial_groups.items():
+        if len(files) > 1:
+            print(f"シリアル {serial} のファイル:")
+            for file in files:
+                print(f"- {file}")
+
+
+def serial_num_check(s) :
+    # 正規表現パターンで5個以上の連続する半角数字をマッチ
+    match = re.search(r'\d{5,}', s)
+    # マッチが見つかった場合はその部分を返す
+    return match.group() if match else None
+
 
 def read_dirlist() :
     global dir_list 
