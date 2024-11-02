@@ -7,19 +7,22 @@ import re
 import os
 from collections import defaultdict
 
-# 24/11/01 v0.03 シリアル番号によるチェックを入れた
-version = "0.03"
+# 24/11/02 v0.04 結果をファイルに出力する
+version = "0.04"
 
 appdir = os.path.dirname(os.path.abspath(__file__))
 dirlist = appdir + "./dirlist.txt"
+resultfile = appdir + "./result.txt"
 file_info = {}
 
 def main_proc():
-    global file_info
+    global file_info,out
     read_dirlist()
     create_file_info()
+    out = open(resultfile,'w' ,  encoding='utf-8')
     same_size_file_check()
     same_seeial_file_check()
+    out.close()
 
 def create_file_info() :
     for d in dir_list :
@@ -44,11 +47,14 @@ def same_size_file_check() :
     for file, size in file_info.items():
         size_groups[size].append(file)
 
+    out.write("=== size section ===\n")
     for size, files in size_groups.items():
         if len(files) > 1:
             print(f"サイズ {size} のファイル:")
+            out.write(f"### size {size} :\n")
             for file in files:
                 print(f"- {file}")
+                out.write(f"- {file}\n")
 
 def same_seeial_file_check() :
     serial_groups = defaultdict(list)
@@ -57,12 +63,15 @@ def same_seeial_file_check() :
         if ret != None :
             serial_groups[ret].append(filename)
 
+    out.write("\n\n=== serial section ===\n")
     for serial, files in serial_groups.items():
         if len(files) > 1:
             print(f"シリアル {serial} のファイル:")
+            out.write(f"### seiral {serial}:\n")
             for file in files:
                 print(f"- {file}")
-
+                out.write(f"- {file}\n")
+            out.write(f"----\n")
 
 def serial_num_check(s) :
     # 正規表現パターンで5個以上の連続する半角数字をマッチ
